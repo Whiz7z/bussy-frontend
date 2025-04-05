@@ -1,0 +1,23 @@
+/* eslint-disable  */
+/* eslint-disable @tailwindcss/no-custom-classname */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "tailwindcss";
+
+
+
+:root {
+  --primary: #333C7C;
+  --accent: #FFB700;
+  --background: #DADADA;
+  --text: #FFFFFF;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background);
+}
