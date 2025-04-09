@@ -22,11 +22,13 @@ const Navbar = () => {
                   Add Business
                 </Link>
                 <div className="flex items-center gap-3">
-                  <img
-                    src={user.picture}
-                    alt={user.name}
-                    className="w-8 h-8 rounded-full"
-                  />
+                  <Link to="/profile" className="hover:text-accent cursor-pointer">
+                    <img
+                      src={user.picture}
+                      alt={user.name}
+                      className="w-8 h-8 rounded-full hover:ring-2 hover:ring-accent transition-all"
+                    />
+                  </Link>
                   <button
                     onClick={logout}
                     className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 cursor-pointer"

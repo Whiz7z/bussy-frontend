@@ -1,11 +1,17 @@
 import { useState } from 'react';
 
-export default function SearchBar({ onSearch }) {
+export default function SearchBar({ onSearch, onReset }) {
   const [category, setCategory] = useState('');
   const [address, setAddress] = useState('');
 
   const handleSearch = () => {
     onSearch({ category, address });
+  };
+
+  const handleReset = () => {
+    onReset();
+    setCategory('');
+    setAddress('');
   };
 
   return (
@@ -55,6 +61,12 @@ export default function SearchBar({ onSearch }) {
             strokeWidth="1.5"
           />
         </svg>
+      </button>
+      <button
+        onClick={handleReset}
+        className="bg-red-500 text-white px-4 py-2 rounded-lg cursor-pointer"
+      >
+        Reset
       </button>
     </div>
   );

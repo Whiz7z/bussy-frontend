@@ -3,7 +3,8 @@ import SearchBar from '../components/SearchBar';
 import BusinessCard from '../components/BusinessCard';
 
 export default function Home() {
-  const [businesses, setBusinesses] = useState([]);
+  const [businesses, setBusinesses] = useState([]); // Store all businesses
+  const [filteredBusinesses, setFilteredBusinesses] = useState([]); // Store filtered businesses
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -11,14 +12,14 @@ export default function Home() {
     fetchBusinesses();
   }, []);
 
-  const fetchBusinesses = async (searchParams = {}) => {
+  const fetchBusinesses = async () => {
     try {
       setLoading(true);
-      const queryParams = new URLSearchParams(searchParams).toString();
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/businesses${queryParams ? `?${queryParams}` : ''}`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/businesses`);
       if (!response.ok) throw new Error('Failed to fetch businesses');
       const data = await response.json();
       setBusinesses(data);
+      setFilteredBusinesses(data); // Initialize filtered businesses
     } catch (err) {
       setError(err.message);
     } finally {
@@ -27,7 +28,20 @@ export default function Home() {
   };
 
   const handleSearch = (params) => {
-    fetchBusinesses(params);
+    const { category, address } = params;
+
+    // Filter businesses based on category and address
+    const filtered = businesses.filter(business => {
+      const matchesCategory = category ? business.category.toLowerCase().includes(category.toLowerCase()) : true;
+      const matchesAddress = address ? business.formattedAddress.toLowerCase().includes(address.toLowerCase()) : true;
+      return matchesCategory && matchesAddress;
+    });
+
+    setFilteredBusinesses(filtered);
+  };
+
+  const handleReset = () => {
+    setFilteredBusinesses(businesses); // Reset filtered businesses to all businesses
   };
 
   if (error) {
@@ -39,15 +53,16 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen  px-4 mt-[200px]">
+    <div className="min-h-screen px-4 mt-[200px]">
       <div className="max-w-[900px] mx-auto grid">
-        <SearchBar onSearch={handleSearch} />
-        
-        <div className="grid gap-4 mt-8  ">
+        <SearchBar onSearch={handleSearch} onReset={handleReset} />
+
+
+        <div className="grid gap-4 mt-8">
           {loading ? (
             <div className="text-center">Loading...</div>
-          ) : businesses.length > 0 ? (
-            businesses.map(business => (
+          ) : filteredBusinesses.length > 0 ? (
+            filteredBusinesses.map(business => (
               <BusinessCard key={business.id} business={business} />
             ))
           ) : (
@@ -57,4 +72,4 @@ export default function Home() {
       </div>
     </div>
   );
-} 
+}
