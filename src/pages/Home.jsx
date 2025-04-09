@@ -55,7 +55,7 @@ export default function Home() {
   return (
     <div className="min-h-screen px-4 mt-[200px]">
       <div className="max-w-[900px] mx-auto grid">
-        <div className="w-[900px] h-[120px] bg-[#333C7C] rounded-xl p-6">
+        <div className="w-[900px] h-[120px] bg-[#333C7C] rounded-xl p-6 mb-2">
           <h2 className="text-2xl font-bold">Daily Offers</h2>
         </div>
         <SearchBar onSearch={handleSearch} onReset={handleReset} />
