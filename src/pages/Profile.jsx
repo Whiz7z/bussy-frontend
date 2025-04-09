@@ -19,6 +19,16 @@ function Profile() {
   const handleImageSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        setUploadError('File size must be less than 5MB');
+        return;
+      }
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        setUploadError('Only image files are allowed');
+        return;
+      }
       setSelectedImage(file);
       setUploadError(null);
     }
@@ -40,14 +50,18 @@ function Profile() {
         credentials: 'include'
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to upload image');
+        throw new Error(data.error || 'Failed to upload image');
       }
 
-      // Refresh the page to show the new profile picture
-      window.location.reload();
-    } catch (err) {
-      setUploadError('Failed to upload image. Please try again.');
+      // Update the user's picture in the UI
+      if (data.url) {
+        window.location.reload();
+      }
+    } catch (error) {
+      setUploadError(error.message || 'Failed to upload image. Please try again.');
     } finally {
       setIsUploading(false);
     }
