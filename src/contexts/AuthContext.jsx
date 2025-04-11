@@ -7,37 +7,16 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // Check authentication status on load
   useEffect(() => {
-    // Check if we have a token in localStorage
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      fetchUserData(token);
-    } else {
-      setLoading(false);
-    }
+    checkAuthStatus();
   }, []);
   
-  // Parse token from URL if it exists (after OAuth redirect)
-  useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
-    const token = query.get('token');
-    
-    if (token) {
-      localStorage.setItem('authToken', token);
-      fetchUserData(token);
-      // Clean up the URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
-  
-  const fetchUserData = async (token) => {
+  const checkAuthStatus = async () => {
     try {
       setLoading(true);
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/user`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+        credentials: 'include' // Include cookies in the request
       });
       
       if (response.ok) {
@@ -45,15 +24,10 @@ export const AuthProvider = ({ children }) => {
         setUser(userData);
         setError(null);
       } else {
-        // Token is invalid, clear it
-        localStorage.removeItem('authToken');
-        setError('Authentication failed. Please log in again.');
         setUser(null);
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
-      setError('Error connecting to server. Please try again later.');
-      localStorage.removeItem('authToken');
+      console.error('Error checking authentication status:', error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -64,23 +38,19 @@ export const AuthProvider = ({ children }) => {
     window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
   };
   
-  const logout = () => {
-    localStorage.removeItem('authToken');
-    setUser(null);
-    // Optionally notify the server about logout
-    fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
-      credentials: 'include'
-    }).catch(error => {
+  const logout = async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
+        credentials: 'include' // Include cookies in the request
+      });
+      setUser(null);
+    } catch (error) {
       console.error('Error during logout:', error);
-    });
-  };
-  
-  const getAuthToken = () => {
-    return localStorage.getItem('authToken');
+    }
   };
   
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, logout, getAuthToken }}>
+    <AuthContext.Provider value={{ user, loading, error, login, logout, checkAuthStatus }}>
       {children}
     </AuthContext.Provider>
   );

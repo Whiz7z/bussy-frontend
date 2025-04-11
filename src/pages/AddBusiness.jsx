@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 
 export default function AddBusiness() {
   const navigate = useNavigate();
-  const { user, getAuthToken } = useAuth();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -33,18 +33,13 @@ export default function AddBusiness() {
 
     try {
       setLoading(true);
-      const token = getAuthToken();
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-
+      
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/businesses`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include', // Include cookies in the request
         body: JSON.stringify(formData)
       });
 

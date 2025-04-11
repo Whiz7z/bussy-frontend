@@ -1,14 +1,21 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
+  const { checkAuthStatus } = useAuth();
 
   useEffect(() => {
-    // The token is automatically handled by the AuthContext
-    // Just need to redirect to the home page or previous page
-    navigate('/');
-  }, [navigate]);
+    const completeAuth = async () => {
+      // Check authentication status after redirect
+      await checkAuthStatus();
+      // Redirect to home page
+      navigate('/');
+    };
+    
+    completeAuth();
+  }, [checkAuthStatus, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

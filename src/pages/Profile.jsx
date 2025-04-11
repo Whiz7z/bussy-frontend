@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 function Profile() {
-  const { user, isLoading, getAuthToken } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -44,17 +44,9 @@ function Profile() {
     formData.append('image', selectedImage);
 
     try {
-      const token = getAuthToken();
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload-profile-picture`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
+        credentials: 'include',
         body: formData
       });
 
