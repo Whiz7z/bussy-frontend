@@ -10,8 +10,11 @@ export default function AddBusiness() {
     category: '',
     formattedAddress: '',
     phoneNumber: '',
-    website: ''
+    website: '',
+    promotion: ''
   });
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   
@@ -24,6 +27,25 @@ export default function AddBusiness() {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('File size must be less than 5MB');
+        return;
+      }
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        setError('Only image files are allowed');
+        return;
+      }
+      setSelectedImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      setError(null);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
@@ -33,17 +55,31 @@ export default function AddBusiness() {
 
     try {
       setLoading(true);
+      setError(null);
+      
+      // Create FormData to send both text and file data
+      const submitData = new FormData();
+      // Add all text fields
+      Object.keys(formData).forEach(key => {
+        if (formData[key]) {
+          submitData.append(key, formData[key]);
+        }
+      });
+      // Add image if selected
+      if (selectedImage) {
+        submitData.append('image', selectedImage);
+      }
       
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/businesses`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         credentials: 'include', // Include cookies in the request
-        body: JSON.stringify(formData)
+        body: submitData // FormData - do not set Content-Type header, browser will set it with boundary
       });
 
-      if (!response.ok) throw new Error('Failed to create business');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create business');
+      }
 
       navigate('/');
     } catch (err) {
@@ -136,6 +172,51 @@ export default function AddBusiness() {
               className="w-full h-[45px] bg-[#333C7C] rounded-xl text-white text-sm px-4 outline-none"
               placeholder="Enter website URL"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Current Promotion (Optional)
+            </label>
+            <input
+              type="text"
+              name="promotion"
+              value={formData.promotion}
+              onChange={handleChange}
+              className="w-full h-[45px] bg-[#333C7C] rounded-xl text-white text-sm px-4 outline-none"
+              placeholder="e.g., '20% off all services this week'"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Business Image
+            </label>
+            <div className="flex items-center space-x-4">
+              <label className="cursor-pointer flex items-center justify-center h-[45px] bg-[#333C7C] rounded-xl text-white text-sm px-4 hover:bg-opacity-90 transition-opacity">
+                <span>Select Image</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+              {selectedImage && (
+                <span className="text-sm text-gray-500">
+                  {selectedImage.name}
+                </span>
+              )}
+            </div>
+            {previewUrl && (
+              <div className="mt-2">
+                <img 
+                  src={previewUrl} 
+                  alt="Preview" 
+                  className="h-40 object-cover rounded-lg border border-gray-300" 
+                />
+              </div>
+            )}
           </div>
 
           <button
