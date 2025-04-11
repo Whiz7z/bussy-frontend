@@ -69,9 +69,9 @@ export default function Home() {
           {loading ? (
             <div className="text-white text-center py-4">Loading promotions...</div>
           ) : promotionBusinesses.length > 0 ? (
-            <div className="space-y-4 mb-2">
+            <div className="space-y-4">
               {promotionBusinesses.slice(0, 3).map(business => (
-                <div key={business.id} className="bg-[#333C7C] bg-opacity-10 rounded-lg p-4 hover:bg-opacity-20 transition-colors">
+                <div key={business.id} className="bg-[#333C7C] bg-opacity-10 rounded-lg p-4 hover:bg-opacity-20 transition-colors mb-1">
                   <div className="flex items-start">
                     {business.imageUrl && (
                       <div className="w-16 h-16 mr-4 flex-shrink-0">
