@@ -60,7 +60,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen px-4 mt-[200px]">
+    <div className="min-h-screen px-4 mt-[20px]">
       <div className="max-w-[900px] mx-auto grid gap-6">
         {/* Daily Offers Section */}
         <div className="w-[900px] bg-blue-500 rounded-xl p-6">
