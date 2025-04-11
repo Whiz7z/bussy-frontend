@@ -6,22 +6,22 @@ import Login from './pages/Login';
 import AddBusiness from './pages/AddBusiness';
 import BusinessDetails from './pages/BusinessDetails';
 import Profile from './pages/Profile';
+import AuthCallback from './pages/AuthCallback';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-primary">
+        <div className="relative">
           <Navbar />
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/add-business" element={<AddBusiness />} />
-              <Route path="/business/:id" element={<BusinessDetails />} />
-              <Route path="/profile" element={<Profile />} />
-            </Routes>
-          </main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/business/:id" element={<BusinessDetails />} />
+            <Route path="/add-business" element={<AddBusiness />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/auth-callback" element={<AuthCallback />} />
+            <Route path="/login" element={<Login />} />
+          </Routes>
         </div>
       </Router>
     </AuthProvider>

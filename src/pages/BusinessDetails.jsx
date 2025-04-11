@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 export default function BusinessDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, getAuthToken } = useAuth();
   const [business, setBusiness] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,12 +52,18 @@ export default function BusinessDetails() {
     }
 
     try {
+      const token = getAuthToken();
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/reviews`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        credentials: 'include',
         body: JSON.stringify({
           ...reviewForm,
           businessId: id

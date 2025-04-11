@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 
 export default function AddBusiness() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, getAuthToken } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -14,6 +14,7 @@ export default function AddBusiness() {
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,12 +33,18 @@ export default function AddBusiness() {
 
     try {
       setLoading(true);
+      const token = getAuthToken();
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/businesses`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-        credentials: 'include',
         body: JSON.stringify(formData)
       });
 
