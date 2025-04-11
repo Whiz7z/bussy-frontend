@@ -15,15 +15,24 @@ export const AuthProvider = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       setLoading(true);
+      console.log('Checking auth status...');
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/user`, {
-        credentials: 'include' // Include cookies in the request
+        method: 'GET',
+        credentials: 'include', // Include cookies in the request
+        headers: {
+          'Accept': 'application/json'
+        }
       });
+      
+      console.log('Auth response status:', response.status);
       
       if (response.ok) {
         const userData = await response.json();
+        console.log('User data received:', userData);
         setUser(userData);
         setError(null);
       } else {
+        console.log('Not authenticated');
         setUser(null);
       }
     } catch (error) {
